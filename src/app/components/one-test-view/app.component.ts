@@ -1,3 +1,5 @@
+import { DataFrame } from 'data-forge'
+
 import { Component, OnInit } from '@angular/core';
 
 import { Ng5HttpService } from '../../services/app.ng5http.service';
@@ -16,10 +18,15 @@ export class AppComponent implements OnInit {
   ){}
 
   public ngOnInit(): void {
-    this._newHttpService.getTestResult()
-    .subscribe(result => {
-      this.result = result.map(x => x["timestamp"])[0]
-    })
+    let df = new DataFrame({
+        columns: {
+            'regiment': ['Nighthawks', 'Nighthawks', 'Nighthawks', 'Nighthawks', 'Dragoons', 'Dragoons', 'Dragoons', 'Dragoons', 'Scouts', 'Scouts', 'Scouts', 'Scouts'],
+            'company': ['1st', '1st', '2nd', '2nd', '1st', '1st', '2nd', '2nd','1st', '1st', '2nd', '2nd'],
+            'TestScore': [4, 24, 31, 2, 3, 4, 24, 31, 2, 3, 2, 3]
+        }
+    });
+    const pivotted = df.pivot(["regiment", "company"], "TestScore", testScores => testScores.average());
+    console.log(pivotted.toArray())
   }
 
 }
